@@ -1,6 +1,6 @@
-variable "cloudflare_tunnel_cred_file_name" {
+variable "cloudflare_tunnel_creds" {
   type        = string
-  description = "File name of the cloudflared tunnel credentials file"
+  description = "Cloudflared tunnel credentials json"
 }
 
 variable "domain_name" {

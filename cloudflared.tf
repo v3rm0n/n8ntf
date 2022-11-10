@@ -10,7 +10,7 @@ resource "kubernetes_secret" "cloudflared_token" {
     namespace = local.namespace
   }
   data = {
-    "credentials.json" = file(var.cloudflare_tunnel_cred_file_name)
+    "credentials.json" = var.cloudflare_tunnel_creds
   }
 }
 
