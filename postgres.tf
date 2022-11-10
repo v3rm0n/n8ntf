@@ -1,8 +1,8 @@
 locals {
-    labels = {
+    postgres_labels = {
         app = "postgres"
     }
-    config_map_ref_name = "postgres-config"
+    postgres_namespace = kubernetes_namespace.n8n.metadata.0.name
 }
 
 resource "random_password" "postgres" {
@@ -13,9 +13,9 @@ resource "random_password" "postgres" {
 
 resource "kubernetes_config_map" "postgres" {
     metadata {
-        name      = local.config_map_ref_name
-        namespace = kubernetes_namespace.n8n.metadata.0.name
-        labels    = local.labels
+        name      = "postgres-config"
+        namespace = local.postgres_namespace
+        labels    = local.postgres_labels
     }
 
     data = {
@@ -28,12 +28,11 @@ resource "kubernetes_config_map" "postgres" {
 resource "kubernetes_persistent_volume_claim" "postgres" {
     metadata {
         name      = "postgres-pv-claim"
-        namespace = kubernetes_namespace.n8n.metadata.0.name
-        labels    = local.labels
+        namespace = local.postgres_namespace
+        labels    = local.postgres_labels
     }
     spec {
-        storage_class_name = "microk8s-hostpath"
-        access_modes       = ["ReadWriteMany"]
+        access_modes = ["ReadWriteOnce"]
         resources {
             requests = {
                 storage = "5Gi"
@@ -44,17 +43,18 @@ resource "kubernetes_persistent_volume_claim" "postgres" {
 
 resource "kubernetes_deployment" "postgres" {
     metadata {
-        name = "postgres"
-        namespace = kubernetes_namespace.n8n.metadata.0.name
+        name      = "postgres"
+        namespace = local.postgres_namespace
+        labels    = local.postgres_labels
     }
     spec {
         replicas = "1"
         selector {
-            match_labels = local.labels
+            match_labels = local.postgres_labels
         }
         template {
             metadata {
-                labels = local.labels
+                labels = local.postgres_labels
             }
             spec {
                 volume {
@@ -65,7 +65,7 @@ resource "kubernetes_deployment" "postgres" {
                 }
                 container {
                     name              = "postgres"
-                    image             = "postgres:15.0"
+                    image             = "postgres:14.5"
                     image_pull_policy = "IfNotPresent"
                     port {
                         container_port = 5432
@@ -76,11 +76,29 @@ resource "kubernetes_deployment" "postgres" {
                     }
                     env_from {
                         config_map_ref {
-                            name = local.config_map_ref_name
+                            name = kubernetes_config_map.postgres.metadata.0.name
                         }
                     }
                 }
             }
         }
     }
+}
+
+resource "kubernetes_service" "postgres" {
+    metadata {
+        name      = "postgres"
+        labels    = local.postgres_labels
+        namespace = local.namespace
+    }
+    spec {
+        selector = local.postgres_labels
+        port {
+            protocol    = "TCP"
+            target_port = "5432"
+            port        = 5432
+        }
+    }
+
+    depends_on = [kubernetes_deployment.postgres]
 }

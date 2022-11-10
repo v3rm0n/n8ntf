@@ -2,3 +2,5 @@
 .terraform
 *.tfstate*
 kubeconfig
+*.json
+*.tfvars
