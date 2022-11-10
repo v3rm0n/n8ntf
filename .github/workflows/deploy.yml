@@ -22,3 +22,10 @@ jobs:
         run: terraform init
       - name: Terraform plan
         run: terraform plan
+        env:
+          KUBE_HOST: ${{ secrets.KUBE_HOST }}
+          KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
+          KUBE_USERNAME: ${{ secrets.KUBE_USERNAME }}
+          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+          TF_VAR_CLOUDFLARE_TUNNEL_CREDS: ${{ secrets.TF_VAR_CLOUDFLARE_TUNNEL_CREDS }}
+          TF_VAR_DOMAIN_NAME: ${{ secrets.TF_VAR_DOMAIN_NAME }}
