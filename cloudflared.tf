@@ -26,7 +26,7 @@ credentials-file: /etc/cloudflared/creds/credentials.json
 metrics: 0.0.0.0:2000
 ingress:
 - hostname: ${var.domain_name}
-  service: http://${kubernetes_service.n8n.metadata.0.name}:8080
+  service: http://${kubernetes_service.n8n.metadata.0.name}:5678
 - service: http_status:404
 EOF
   }
