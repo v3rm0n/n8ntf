@@ -27,5 +27,5 @@ jobs:
           KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
           KUBE_USERNAME: ${{ secrets.KUBE_USERNAME }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
-          TF_VAR_CLOUDFLARE_TUNNEL_CREDS: ${{ secrets.TF_VAR_CLOUDFLARE_TUNNEL_CREDS }}
-          TF_VAR_DOMAIN_NAME: ${{ secrets.TF_VAR_DOMAIN_NAME }}
+          TF_VAR_cloudflare_tunnel_creds: ${{ secrets.TF_VAR_CLOUDFLARE_TUNNEL_CREDS }}
+          TF_VAR_domain_name: ${{ secrets.TF_VAR_DOMAIN_NAME }}
