@@ -18,10 +18,14 @@ jobs:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+      - name: Terraform Format
+        run: terraform fmt -check
+        continue-on-error: true
       - name: Init Terraform
         run: terraform init
-      - name: Terraform plan
-        run: terraform plan
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply --auto-approve
         env:
           KUBE_HOST: ${{ secrets.KUBE_HOST }}
           KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
